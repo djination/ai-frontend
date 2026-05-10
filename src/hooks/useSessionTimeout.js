@@ -16,7 +16,9 @@ export function useSessionTimeout() {
     const hasSession = () =>
       Boolean(
         localStorage.getItem(STORAGE_KEYS.ROLE) ||
-          localStorage.getItem(STORAGE_KEYS.ADMIN_AUTH),
+          localStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) ||
+          localStorage.getItem(STORAGE_KEYS.AUTH_ACCESS_TOKEN) ||
+          localStorage.getItem(STORAGE_KEYS.AUTH_REFRESH_TOKEN),
       );
 
     const resetTimer = () => {

@@ -7,6 +7,19 @@ import {
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ?? 'http://127.0.0.1:8000/api/content-engine';
 
+export class ContentEngineError extends Error {
+  /**
+   * @param {string} message
+   * @param {{ status?: number, body?: unknown }} [meta]
+   */
+  constructor(message, meta = {}) {
+    super(message);
+    this.name = 'ContentEngineError';
+    this.status = meta.status;
+    this.body = meta.body;
+  }
+}
+
 async function parseBody(response) {
   return response.json().catch(() => null);
 }
@@ -38,7 +51,7 @@ export async function request(path, options = {}) {
   const body = await parseBody(response);
   if (!response.ok) {
     const message = body?.error ?? body?.message ?? 'Unexpected server error';
-    throw new Error(message);
+    throw new ContentEngineError(message, { status: response.status, body });
   }
 
   return body;

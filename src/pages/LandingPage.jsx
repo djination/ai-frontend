@@ -5,8 +5,8 @@ import { clearAuthSession } from '../services/authSession';
 
 const highlights = [
   'Structured learning path untuk Beginner sampai Advanced.',
-  'Content ingestion flow yang langsung terhubung ke backend.',
-  'Admin panel untuk publish control dan monitoring konten.',
+  'Chat tutor AI setelah login — daftar akun learner dari halaman pendaftaran.',
+  'Panel pengelola konten terpisah untuk tim internal (bukan peserta).',
 ];
 
 export function LandingPage() {
@@ -29,23 +29,35 @@ export function LandingPage() {
             English Learning Hub
           </h1>
           <p className="mt-3 max-w-2xl text-sm text-brand-100 md:text-base">
-            Frontend untuk kursus Bahasa Inggris dengan experience learner dan
-            admin content dalam satu sistem.
+            Tampilan peserta dan area pengelola konten kini dipisah. Peserta baru bisa mendaftar
+            sendiri; tim konten memakai jalur admin terpisah setelah login internal.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
+            <Link
+              to="/register"
+              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-brand-700 shadow-sm"
+            >
+              Daftar akun learner
+            </Link>
+            <Link
+              to="/login"
+              className="rounded-lg border border-white/40 px-4 py-2 text-sm font-semibold text-white"
+            >
+              Masuk peserta (login)
+            </Link>
             <button
               type="button"
               onClick={() => enterAs('learner')}
-              className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-brand-700"
+              className="rounded-lg border border-white/25 px-4 py-2 text-xs font-semibold text-brand-100 hover:bg-white/10"
             >
-              Masuk sebagai Learner
+              Demo cepat (tanpa login JWT)
             </button>
             <button
               type="button"
               onClick={() => enterAs('admin')}
               className="rounded-lg border border-brand-200 px-4 py-2 text-sm font-semibold text-white"
             >
-              Masuk sebagai Admin
+              Masuk sebagai pengurus konten
             </button>
           </div>
           {role ? (
@@ -73,13 +85,20 @@ export function LandingPage() {
           ))}
         </div>
         <div className="border-t border-slate-200 bg-slate-50 px-6 py-4 text-xs text-slate-600 md:px-10">
-          Butuh akses cepat?{' '}
-          <Link to="/app/learn" className="font-semibold text-brand-700 hover:underline">
-            Buka learning
+          <Link to="/register" className="font-semibold text-brand-700 hover:underline">
+            Daftar learner
           </Link>
-          {' | '}
-          <Link to="/app/admin" className="font-semibold text-brand-700 hover:underline">
-            Buka admin
+          {' · '}
+          <Link to="/login" className="font-semibold text-brand-700 hover:underline">
+            Login peserta
+          </Link>
+          {' · '}
+          <Link to="/app/learn" className="font-semibold text-brand-700 hover:underline">
+            Ruang belajar
+          </Link>
+          {' · '}
+          <Link to="/app/admin" className="font-semibold text-slate-500 hover:underline">
+            Portal konten (internal)
           </Link>
         </div>
       </section>

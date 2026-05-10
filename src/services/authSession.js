@@ -24,7 +24,15 @@ export function getRefreshToken() {
 export function saveAuthTokens({ access, refresh }) {
   localStorage.setItem(STORAGE_KEYS.AUTH_ACCESS_TOKEN, access);
   localStorage.setItem(STORAGE_KEYS.AUTH_REFRESH_TOKEN, refresh);
-  localStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+}
+
+/** Hanya dipanggil setelah login sukses di panel admin (bukan login chat / daftar peserta). */
+export function setAdminPanelSession(active) {
+  if (active) {
+    localStorage.setItem(STORAGE_KEYS.ADMIN_AUTH, 'true');
+  } else {
+    localStorage.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+  }
 }
 
 export function clearAuthSession() {
@@ -44,11 +52,16 @@ export function isAccessTokenExpired() {
   return payload.exp <= now;
 }
 
-export async function loginWithCredentials(username, password) {
+export async function loginWithCredentials(username, password, options = {}) {
+  const recaptchaToken = options.recaptchaToken?.trim?.() ?? '';
   const response = await fetch(`${AUTH_BASE_URL}/token/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({
+      username,
+      password,
+      ...(recaptchaToken ? { recaptcha_token: recaptchaToken } : {}),
+    }),
   });
 
   const body = await response.json().catch(() => null);
@@ -81,6 +94,51 @@ export async function refreshAccessToken() {
 
   localStorage.setItem(STORAGE_KEYS.AUTH_ACCESS_TOKEN, body.access);
   return body.access;
+}
+
+function formatRegisterErrors(body) {
+  if (!body || typeof body !== 'object') {
+    return 'Pendaftaran gagal';
+  }
+  if (typeof body.detail === 'string') {
+    return body.detail;
+  }
+  const parts = [];
+  Object.entries(body).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      parts.push(`${key}: ${value.join(', ')}`);
+    } else if (value && typeof value === 'object') {
+      parts.push(`${key}: ${JSON.stringify(value)}`);
+    } else if (value != null) {
+      parts.push(`${key}: ${value}`);
+    }
+  });
+  return parts.length ? parts.join(' ') : 'Pendaftaran gagal';
+}
+
+export async function registerLearner({
+  username,
+  password,
+  passwordConfirm,
+  email,
+  recaptchaToken = '',
+}) {
+  const response = await fetch(`${AUTH_BASE_URL}/register/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      username,
+      password,
+      password_confirm: passwordConfirm,
+      email: email?.trim() ?? '',
+      ...(recaptchaToken ? { recaptcha_token: recaptchaToken } : {}),
+    }),
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new Error(formatRegisterErrors(body));
+  }
+  return body;
 }
 
 export async function fetchCurrentUser() {

@@ -7,7 +7,11 @@ import {
   isAccessTokenExpired,
   loginWithCredentials,
   refreshAccessToken,
+  setAdminPanelSession,
 } from '../services/authSession';
+import { executeRecaptcha } from '../utils/recaptcha';
+
+const RECAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY?.trim() ?? '';
 
 function getInitialAuthState() {
   return localStorage.getItem(STORAGE_KEYS.ADMIN_AUTH) === 'true';
@@ -31,31 +35,25 @@ export function ProtectedAdminRoute({ children }) {
     });
   }, [isAuthenticated]);
 
+  useEffect(() => {
+    const handleAdminLogout = () => {
+      clearAuthSession();
+      setIsAuthenticated(false);
+    };
+    window.addEventListener('admin-logout', handleAdminLogout);
+    return () => window.removeEventListener('admin-logout', handleAdminLogout);
+  }, []);
+
   if (isAuthenticated) {
-    return (
-      <section>
-        <div className="mb-4 flex justify-end">
-          <button
-            type="button"
-            onClick={() => {
-              clearAuthSession();
-              setIsAuthenticated(false);
-            }}
-            className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700"
-          >
-            Logout Admin
-          </button>
-        </div>
-        {children}
-      </section>
-    );
+    return children;
   }
 
   return (
     <section className="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-xl font-semibold text-slate-900">Admin Authentication</h2>
+      <h2 className="text-xl font-semibold text-slate-900">Masuk ke panel konten</h2>
       <p className="mt-1 text-sm text-slate-600">
-        Login admin menggunakan kredensial backend (JWT).
+        Gunakan akun pengurus konten dari backend (login JWT). Ini berbeda dari memilih peran
+        &quot;admin&quot; di halaman utama — kedua langkah diperlukan untuk mengamankan akses.
       </p>
       <form
         className="mt-4 space-y-3"
@@ -64,8 +62,13 @@ export function ProtectedAdminRoute({ children }) {
           setLoading(true);
           setError('');
           try {
-            await loginWithCredentials(username, password);
+            let recaptchaToken = '';
+            if (RECAPTCHA_SITE_KEY) {
+              recaptchaToken = await executeRecaptcha(RECAPTCHA_SITE_KEY, 'login');
+            }
+            await loginWithCredentials(username, password, { recaptchaToken });
             await fetchCurrentUser();
+            setAdminPanelSession(true);
             setIsAuthenticated(true);
           } catch (err) {
             setError(err instanceof Error ? err.message : 'Login gagal');

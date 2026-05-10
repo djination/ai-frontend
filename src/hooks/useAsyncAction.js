@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export function useAsyncAction() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const run = async (action) => {
+  const run = useCallback(async (action) => {
     setLoading(true);
     setError('');
     try {
@@ -16,7 +16,9 @@ export function useAsyncAction() {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  return { loading, error, run, clearError: () => setError('') };
+  const clearError = useCallback(() => setError(''), []);
+
+  return { loading, error, run, clearError };
 }
