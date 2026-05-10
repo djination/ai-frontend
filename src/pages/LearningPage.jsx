@@ -10,13 +10,32 @@ import {
 import { STORAGE_KEYS } from '../constants/storageKeys';
 import { StatusMessage } from '../components/StatusMessage';
 import {
+  fetchLearnerLimits,
   fetchCurrentModule,
   fetchPublishedModule,
   fetchPublishedModules,
   getLearnerContentLanguage,
   setLearnerContentLanguage,
 } from '../services/contentEngineApi';
+import { getAccessToken, isAccessTokenExpired } from '../services/authSession';
 import { buildChatLearningPayload } from '../utils/chatLearningContext';
+
+function quotaRatio(bucket) {
+  if (!bucket || bucket.limit == null) return null;
+  const limit = Number(bucket.limit);
+  const remaining = Number(bucket.remaining ?? 0);
+  if (!Number.isFinite(limit) || limit <= 0) return null;
+  return remaining / limit;
+}
+
+function quotaSeverity(bucket) {
+  const ratio = quotaRatio(bucket);
+  if (ratio == null) return null;
+  if (ratio <= 0.05) return 'critical';
+  if (ratio <= 0.1) return 'warn';
+  if (ratio <= 0.2) return 'info';
+  return null;
+}
 
 export function LearningPage() {
   const navigate = useNavigate();
@@ -27,6 +46,7 @@ export function LearningPage() {
   const [moduleLoading, setModuleLoading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [limits, setLimits] = useState(null);
   const [activeLevel, setActiveLevel] = useState(COURSE_LEVELS[0].key);
   const [progressMap, setProgressMap] = useState(() => {
     try {
@@ -94,6 +114,23 @@ export function LearningPage() {
   useEffect(() => {
     loadInitial();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional mount-only bootstrap
+  }, []);
+
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token || isAccessTokenExpired()) return;
+    let active = true;
+    (async () => {
+      try {
+        const data = await fetchLearnerLimits();
+        if (active) setLimits(data);
+      } catch {
+        if (active) setLimits(null);
+      }
+    })();
+    return () => {
+      active = false;
+    };
   }, []);
 
   /**
@@ -249,6 +286,22 @@ export function LearningPage() {
         <p className="mt-1 text-sm text-slate-600">
           Pilih level belajar untuk menyesuaikan fokus materi.
         </p>
+        {limits?.content ? (
+          <p
+            className={`mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${
+              quotaSeverity(limits.content) === 'critical'
+                ? 'border-rose-300 bg-rose-50 text-rose-800'
+                : quotaSeverity(limits.content) === 'warn'
+                  ? 'border-amber-300 bg-amber-50 text-amber-800'
+                  : quotaSeverity(limits.content) === 'info'
+                    ? 'border-sky-300 bg-sky-50 text-sky-800'
+                    : 'border-slate-200 bg-slate-50 text-slate-700'
+            }`}
+          >
+            Sisa konten: {limits.content.remaining}
+            {limits.content.limit == null ? ' / unlimited' : ` / ${limits.content.limit}`}
+          </p>
+        ) : null}
         <div className="mt-4 flex flex-wrap items-end gap-3">
           <label className="text-xs font-medium text-slate-700" htmlFor="learner-content-lang">
             Bahasa materi (filter publish)

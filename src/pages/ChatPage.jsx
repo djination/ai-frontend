@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { STORAGE_KEYS } from '../constants/storageKeys';
 import { StatusMessage } from '../components/StatusMessage';
-import { ContentEngineError, sendChatMessage } from '../services/contentEngineApi';
+import { getAccessToken, isAccessTokenExpired } from '../services/authSession';
+import { ContentEngineError, fetchLearnerLimits, sendChatMessage } from '../services/contentEngineApi';
 
 const MODES = [
   { value: 'general', label: 'General' },
@@ -12,6 +13,23 @@ const MODES = [
 ];
 
 const SESSION_STORAGE_KEY = 'content-engine-chat-session';
+
+function quotaRatio(bucket) {
+  if (!bucket || bucket.limit == null) return null;
+  const limit = Number(bucket.limit);
+  const remaining = Number(bucket.remaining ?? 0);
+  if (!Number.isFinite(limit) || limit <= 0) return null;
+  return remaining / limit;
+}
+
+function quotaSeverity(bucket) {
+  const ratio = quotaRatio(bucket);
+  if (ratio == null) return null;
+  if (ratio <= 0.05) return 'critical';
+  if (ratio <= 0.1) return 'warn';
+  if (ratio <= 0.2) return 'info';
+  return null;
+}
 
 function readStoredLearningContext() {
   try {
@@ -42,11 +60,29 @@ export function ChatPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [limitUpgradeHint, setLimitUpgradeHint] = useState(false);
+  const [limits, setLimits] = useState(null);
   const bottomRef = useRef(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, loading]);
+
+  useEffect(() => {
+    const token = getAccessToken();
+    if (!token || isAccessTokenExpired()) return;
+    let active = true;
+    (async () => {
+      try {
+        const data = await fetchLearnerLimits();
+        if (active) setLimits(data);
+      } catch {
+        if (active) setLimits(null);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const fromNav = location.state?.chatLearningContext;
@@ -98,6 +134,12 @@ export function ChatPage() {
         ...prev,
         { role: 'assistant', content: `${prefix}${data.reply ?? ''}` },
       ]);
+      try {
+        const latest = await fetchLearnerLimits();
+        setLimits(latest);
+      } catch {
+        /* ignore quota refresh failure */
+      }
     } catch (err) {
       setMessages((prev) => prev.slice(0, -1));
       setInput(text);
@@ -156,6 +198,22 @@ export function ChatPage() {
               Ask English learning questions or platform questions (billing, account). Replies route to a tutor or
               support-style assistant.
             </p>
+            {limits?.chat ? (
+              <p
+                className={`mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${
+                  quotaSeverity(limits.chat) === 'critical'
+                    ? 'border-rose-300 bg-rose-50 text-rose-800'
+                    : quotaSeverity(limits.chat) === 'warn'
+                      ? 'border-amber-300 bg-amber-50 text-amber-800'
+                      : quotaSeverity(limits.chat) === 'info'
+                        ? 'border-sky-300 bg-sky-50 text-sky-800'
+                        : 'border-slate-200 bg-slate-50 text-slate-700'
+                }`}
+              >
+                Sisa chat: {limits.chat.remaining}
+                {limits.chat.limit == null ? ' / unlimited' : ` / ${limits.chat.limit}`}
+              </p>
+            ) : null}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <label className="text-xs font-medium text-slate-600" htmlFor="chat-mode">

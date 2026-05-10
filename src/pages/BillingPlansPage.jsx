@@ -63,6 +63,31 @@ function FeatureIcon({ name }) {
   }
 }
 
+function formatDailyLimit(value) {
+  if (value == null) return 'Unlimited';
+  return `${value}/hari`;
+}
+
+function quotaRatio(bucket) {
+  if (!bucket || bucket.limit == null) return false;
+  const limit = Number(bucket.limit);
+  const remaining = Number(bucket.remaining ?? 0);
+  if (!Number.isFinite(limit) || limit <= 0) return null;
+  return remaining / limit;
+}
+
+function quotaSeverity(limits) {
+  const ratios = [quotaRatio(limits?.chat), quotaRatio(limits?.content)].filter(
+    (v) => typeof v === 'number',
+  );
+  if (!ratios.length) return null;
+  const minRatio = Math.min(...ratios);
+  if (minRatio <= 0.05) return 'critical';
+  if (minRatio <= 0.1) return 'warn';
+  if (minRatio <= 0.2) return 'info';
+  return null;
+}
+
 export function BillingPlansPage() {
   const navigate = useNavigate();
   const { refetch: refetchEntitlement } = useLearnerEntitlement();
@@ -76,6 +101,21 @@ export function BillingPlansPage() {
   const [lastRequestedPlan, setLastRequestedPlan] = useState(null);
   const [limits, setLimits] = useState(null);
   const [limitsError, setLimitsError] = useState('');
+  const severity = quotaSeverity(limits);
+  const quotaWarningConfig = {
+    info: {
+      cls: 'border-sky-200 bg-sky-50 text-sky-800',
+      msg: 'Kuota mulai berkurang (<=20%). Anda bisa pertimbangkan upgrade.',
+    },
+    warn: {
+      cls: 'border-amber-200 bg-amber-50 text-amber-800',
+      msg: 'Kuota menipis (<=10%). Pertimbangkan upgrade agar belajar tidak terhenti.',
+    },
+    critical: {
+      cls: 'border-rose-200 bg-rose-50 text-rose-800',
+      msg: 'Kuota kritis (<=5%). Segera upgrade jika ingin lanjut tanpa gangguan.',
+    },
+  };
 
   const hasValidAccessToken = () => {
     const token = getAccessToken();
@@ -179,6 +219,13 @@ export function BillingPlansPage() {
               Konten: <strong>{limits.content?.remaining ?? 0}</strong>
               {limits.content?.limit == null ? ' / unlimited' : ` / ${limits.content?.limit}`} tersisa
             </p>
+            {severity ? (
+              <p
+                className={`mt-2 rounded-md border px-2 py-1 text-xs ${quotaWarningConfig[severity].cls}`}
+              >
+                {quotaWarningConfig[severity].msg}
+              </p>
+            ) : null}
           </div>
         ) : null}
         {limitsError ? <p className="mt-3 text-center text-xs text-amber-700">{limitsError}</p> : null}
@@ -245,6 +292,12 @@ export function BillingPlansPage() {
                     {plan.vat_note ? <p className="mt-1 text-xs text-slate-500">{plan.vat_note}</p> : null}
                   </div>
                   <p className="mt-3 text-sm text-slate-600">{plan.slogan}</p>
+                  {plan.daily_limits ? (
+                    <div className="mt-3 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600">
+                      <p>Chat: {formatDailyLimit(plan.daily_limits.chat)}</p>
+                      <p>Konten: {formatDailyLimit(plan.daily_limits.content)}</p>
+                    </div>
+                  ) : null}
                   <ul className="mt-4 flex flex-1 flex-col gap-2.5 text-sm text-slate-700">
                     {(plan.features ?? []).map((f, i) => (
                       <li key={i} className="flex gap-2">
