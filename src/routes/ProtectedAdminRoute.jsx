@@ -49,9 +49,9 @@ export function ProtectedAdminRoute({ children }) {
   }
 
   return (
-    <section className="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-xl font-semibold text-slate-900">Masuk ke panel konten</h2>
-      <p className="mt-1 text-sm text-slate-600">
+    <section className="mx-auto max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/90">
+      <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Masuk ke panel konten</h2>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
         Gunakan akun pengurus konten dari backend (login JWT). Ini berbeda dari memilih peran
         &quot;admin&quot; di halaman utama — kedua langkah diperlukan untuk mengamankan akses.
       </p>
@@ -81,7 +81,7 @@ export function ProtectedAdminRoute({ children }) {
           type="text"
           value={username}
           onChange={(event) => setUsername(event.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-brand-500 dark:focus:ring-brand-500"
           placeholder="Username"
           autoComplete="username"
         />
@@ -89,11 +89,11 @@ export function ProtectedAdminRoute({ children }) {
           type="password"
           value={password}
           onChange={(event) => setPassword(event.target.value)}
-          className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-brand-500 dark:focus:ring-brand-500"
           placeholder="Password"
           autoComplete="current-password"
         />
-        {error ? <p className="text-xs text-rose-600">{error}</p> : null}
+        {error ? <p className="text-xs text-rose-600 dark:text-rose-400">{error}</p> : null}
         <button
           type="submit"
           disabled={loading}
@@ -102,10 +102,10 @@ export function ProtectedAdminRoute({ children }) {
           {loading ? 'Memproses...' : 'Masuk'}
         </button>
       </form>
-      <p className="mt-4 text-xs text-slate-500">
+      <p className="mt-4 text-xs text-slate-500 dark:text-slate-500">
         Gunakan akun Django admin/superuser yang sudah dibuat di backend.
       </p>
-      <Link to="/app/learn" className="mt-3 inline-block text-xs text-brand-700 hover:underline">
+      <Link to="/app/learn" className="mt-3 inline-block text-xs text-brand-700 hover:underline dark:text-brand-400">
         Kembali ke learning
       </Link>
     </section>

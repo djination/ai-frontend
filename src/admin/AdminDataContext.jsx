@@ -53,14 +53,17 @@ export function AdminDataProvider({ children }) {
     category: '',
     language_code: '',
     is_published: '',
+    suggested_difficulty: '',
   });
   const [appliedFilters, setAppliedFilters] = useState({
     category: '',
     language_code: '',
     is_published: '',
+    suggested_difficulty: '',
   });
   const [discoverQuery, setDiscoverQuery] = useState('');
   const [discoverCategory, setDiscoverCategory] = useState(LEARNING_PATH_OPTIONS[0].value);
+  const [discoverDifficulty, setDiscoverDifficulty] = useState(DIFFICULTY_OPTIONS[0].value);
   const [discoverMax, setDiscoverMax] = useState(10);
   const [discoverLang, setDiscoverLang] = useState('en');
   const [discoverBackend, setDiscoverBackend] = useState('duckduckgo');
@@ -116,6 +119,10 @@ export function AdminDataProvider({ children }) {
     }
     if (appliedFilters.is_published === 'true' || appliedFilters.is_published === 'false') {
       modFilters.is_published = appliedFilters.is_published === 'true';
+    }
+    const sd = (appliedFilters.suggested_difficulty || '').trim().toLowerCase();
+    if (sd === 'beginner' || sd === 'intermediate' || sd === 'advanced') {
+      rawFilters.suggested_difficulty = sd;
     }
 
     const result = await run(async () => {
@@ -264,6 +271,7 @@ export function AdminDataProvider({ children }) {
       discoverIngest({
         query: q,
         category: discoverCategory.trim(),
+        suggested_difficulty: discoverDifficulty,
         max_results: Math.min(15, Math.max(1, Number(discoverMax) || 10)),
         language_code: discoverLang.trim() || 'en',
         search_backend: discoverBackend,
@@ -278,6 +286,10 @@ export function AdminDataProvider({ children }) {
         ? `Berhasil menambahkan ${n} konten baru ke daftar konten mentah.`
         : 'Pencarian selesai; tidak ada konten baru (lihat ringkasan di bawah).',
     );
+    if (n > 0) {
+      setFilterDraft((prev) => ({ ...prev, suggested_difficulty: discoverDifficulty }));
+      setAppliedFilters((prev) => ({ ...prev, suggested_difficulty: discoverDifficulty }));
+    }
     await loadAdminData();
   };
 
@@ -316,6 +328,8 @@ export function AdminDataProvider({ children }) {
     setDiscoverQuery,
     discoverCategory,
     setDiscoverCategory,
+    discoverDifficulty,
+    setDiscoverDifficulty,
     discoverMax,
     setDiscoverMax,
     discoverLang,

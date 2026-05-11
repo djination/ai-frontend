@@ -78,7 +78,7 @@ export function BillingDemoPaymentPage() {
 
   if (!gateLoaded) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-600">
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/90 dark:text-slate-400">
         Memuat…
       </div>
     );
@@ -86,13 +86,21 @@ export function BillingDemoPaymentPage() {
 
   if (!demoEnabled && step === STEPS.REVIEW) {
     return (
-      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-950">
+      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6 text-amber-950 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-100">
         <h1 className="text-lg font-semibold">Simulasi pembayaran tidak aktif</h1>
         <p className="mt-2 text-sm">
-          Set <code className="rounded bg-amber-100 px-1">BILLING_DEMO_PAYMENT_ENABLED=true</code> di backend{' '}
-          <code className="rounded bg-amber-100 px-1">.env</code>, lalu restart server.
+          Set{' '}
+          <code className="rounded bg-amber-100 px-1 dark:bg-amber-900/80 dark:text-amber-200">
+            BILLING_DEMO_PAYMENT_ENABLED=true
+          </code>{' '}
+          di backend{' '}
+          <code className="rounded bg-amber-100 px-1 dark:bg-amber-900/80 dark:text-amber-200">.env</code>, lalu
+          restart server.
         </p>
-        <Link to="/app/plans" className="mt-4 inline-block text-sm font-semibold text-amber-900 underline">
+        <Link
+          to="/app/plans"
+          className="mt-4 inline-block text-sm font-semibold text-amber-900 underline dark:text-amber-200"
+        >
           Kembali ke paket
         </Link>
       </div>
@@ -100,40 +108,45 @@ export function BillingDemoPaymentPage() {
   }
 
   return (
-    <div className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-wider text-violet-600">Demo pembayaran</p>
-      <h1 className="mt-1 text-xl font-semibold text-slate-900">Checkout simulasi</h1>
-      <p className="mt-2 text-sm text-slate-600">
+    <div className="mx-auto max-w-lg rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/90">
+      <p className="text-xs font-semibold uppercase tracking-wider text-violet-600 dark:text-violet-400">
+        Demo pembayaran
+      </p>
+      <h1 className="mt-1 text-xl font-semibold text-slate-900 dark:text-slate-100">Checkout simulasi</h1>
+      <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
         Alur ini hanya untuk demo. Tidak ada charge sungguhan. Production: ganti dengan payment gateway.
       </p>
 
       {step === STEPS.REVIEW ? (
         <div className="mt-6 space-y-4">
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm">
-            <p className="font-medium text-slate-800">Ringkasan</p>
-            <dl className="mt-2 space-y-1 text-slate-600">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm dark:border-slate-600 dark:bg-slate-800/60">
+            <p className="font-medium text-slate-800 dark:text-slate-200">Ringkasan</p>
+            <dl className="mt-2 space-y-1 text-slate-600 dark:text-slate-400">
               <div className="flex justify-between">
                 <dt>Paket</dt>
-                <dd className="font-semibold text-slate-900">
+                <dd className="font-semibold text-slate-900 dark:text-slate-100">
                   {resolvedTitle || resolvedPlan || '(dari permintaan upgrade)'}
                 </dd>
               </div>
               {resolvedPrice ? (
                 <div className="flex justify-between">
                   <dt>Tagihan</dt>
-                  <dd className="font-semibold text-slate-900">{resolvedPrice} / bulan</dd>
+                  <dd className="font-semibold text-slate-900 dark:text-slate-100">
+                    {resolvedPrice} / bulan
+                  </dd>
                 </div>
               ) : null}
-              <div className="flex justify-between text-xs text-slate-500">
+              <div className="flex justify-between text-xs text-slate-500 dark:text-slate-500">
                 <dt>Metode</dt>
                 <dd>Demo — tanpa gateway</dd>
               </div>
             </dl>
           </div>
           {!resolvedPlan && !queryPlan && !statePlan ? (
-            <p className="text-sm text-rose-600">
+            <p className="text-sm text-rose-600 dark:text-rose-400">
               Tidak ada paket terpilih. Pilih upgrade di halaman Paket terlebih dahulu, atau tambahkan{' '}
-              <code className="rounded bg-slate-100 px-1">?plan=plus</code> di URL.
+              <code className="rounded bg-slate-100 px-1 dark:bg-slate-800 dark:text-slate-200">?plan=plus</code> di
+              URL.
             </p>
           ) : null}
           <button
@@ -144,7 +157,10 @@ export function BillingDemoPaymentPage() {
           >
             Konfirmasi &amp; bayar (demo)
           </button>
-          <Link to="/app/plans" className="block text-center text-sm text-slate-500 hover:text-slate-800">
+          <Link
+            to="/app/plans"
+            className="block text-center text-sm text-slate-500 hover:text-slate-800 dark:text-slate-500 dark:hover:text-slate-300"
+          >
             Batal
           </Link>
         </div>
@@ -152,14 +168,18 @@ export function BillingDemoPaymentPage() {
 
       {step === STEPS.PROCESSING ? (
         <div className="mt-10 flex flex-col items-center py-8">
-          <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-600 border-t-transparent" />
-          <p className="mt-4 text-sm font-medium text-slate-700">Memproses pembayaran…</p>
-          <p className="mt-1 text-xs text-slate-500">Menghubungi server (simulasi delay)</p>
+          <div className="h-10 w-10 animate-spin rounded-full border-2 border-violet-600 border-t-transparent dark:border-violet-400" />
+          <p className="mt-4 text-sm font-medium text-slate-700 dark:text-slate-300">
+            Memproses pembayaran…
+          </p>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-500">
+            Menghubungi server (simulasi delay)
+          </p>
         </div>
       ) : null}
 
       {step === STEPS.SUCCESS ? (
-        <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950">
+        <div className="mt-6 rounded-xl border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-950 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-100">
           <p className="font-semibold">Pembayaran demo berhasil</p>
           <p className="mt-2">{detail}</p>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -172,7 +192,7 @@ export function BillingDemoPaymentPage() {
             </button>
             <Link
               to="/app/learn"
-              className="rounded-lg border border-emerald-700 px-4 py-2 text-sm font-semibold text-emerald-900 hover:bg-emerald-100"
+              className="rounded-lg border border-emerald-700 px-4 py-2 text-sm font-semibold text-emerald-900 hover:bg-emerald-100 dark:border-emerald-500 dark:text-emerald-200 dark:hover:bg-emerald-950/60"
             >
               Mulai belajar
             </Link>
@@ -181,7 +201,7 @@ export function BillingDemoPaymentPage() {
       ) : null}
 
       {step === STEPS.ERROR ? (
-        <div className="mt-6 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900">
+        <div className="mt-6 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900 dark:border-rose-800 dark:bg-rose-950/40 dark:text-rose-200">
           <p className="font-semibold">Gagal</p>
           <p className="mt-2">{error}</p>
           <button
@@ -190,7 +210,7 @@ export function BillingDemoPaymentPage() {
               setStep(STEPS.REVIEW);
               setError('');
             }}
-            className="mt-4 rounded-lg border border-rose-300 bg-white px-4 py-2 text-sm font-semibold text-rose-900"
+            className="mt-4 rounded-lg border border-rose-300 bg-white px-4 py-2 text-sm font-semibold text-rose-900 dark:border-rose-700 dark:bg-slate-800 dark:text-rose-200"
           >
             Coba lagi
           </button>

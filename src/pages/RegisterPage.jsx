@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { useSessionRole } from '../hooks/useSessionRole';
 import { loginWithCredentials, registerLearner } from '../services/authSession';
 import { executeRecaptcha } from '../utils/recaptcha';
@@ -17,19 +18,24 @@ export function RegisterPage() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-lg flex-col justify-center px-4 py-12">
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+    <main className="relative mx-auto flex min-h-screen w-full max-w-lg flex-col justify-center px-4 py-12">
+      <div className="absolute right-4 top-4 z-10 md:right-8 md:top-8">
+        <ThemeToggle />
+      </div>
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/90 md:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 dark:text-brand-400">
           Peserta baru
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">Buat akun learner</h1>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+        <h1 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+          Buat akun learner
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
           Daftar untuk mendapatkan username dan kata sandi guna masuk ke Chat AI dan fitur yang
           memerlukan login. Akun admin/pengurus konten tetap dibuat lewat Django, bukan dari form
           ini.
         </p>
         {RECAPTCHA_SITE_KEY ? (
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
             Dilindungi oleh reCAPTCHA; penggunaan tunduk pada kebijakan Google.
           </p>
         ) : null}
@@ -62,29 +68,29 @@ export function RegisterPage() {
             }
           }}
         >
-          <label className="block text-sm font-medium text-slate-800">
+          <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">
             Username
             <input
               required
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-brand-500 dark:focus:ring-brand-500"
               placeholder="mis. budi_santoso"
             />
           </label>
-          <label className="block text-sm font-medium text-slate-800">
+          <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">
             Email (opsional)
             <input
               type="email"
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-brand-500 dark:focus:ring-brand-500"
               placeholder="nama@email.com"
             />
           </label>
-          <label className="block text-sm font-medium text-slate-800">
+          <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">
             Kata sandi (minimal 8 karakter)
             <input
               required
@@ -92,10 +98,10 @@ export function RegisterPage() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-brand-500 dark:focus:ring-brand-500"
             />
           </label>
-          <label className="block text-sm font-medium text-slate-800">
+          <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">
             Ulangi kata sandi
             <input
               required
@@ -103,10 +109,12 @@ export function RegisterPage() {
               autoComplete="new-password"
               value={passwordConfirm}
               onChange={(e) => setPasswordConfirm(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-brand-500 dark:focus:ring-brand-500"
             />
           </label>
-          {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+          {error ? (
+            <p className="text-sm text-rose-600 dark:text-rose-400">{error}</p>
+          ) : null}
           <button
             type="submit"
             disabled={loading}
@@ -116,13 +124,13 @@ export function RegisterPage() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
           Sudah punya akun?{' '}
-          <Link to="/login" className="font-semibold text-brand-700 hover:underline">
+          <Link to="/login" className="font-semibold text-brand-700 hover:underline dark:text-brand-400">
             Masuk di halaman login
           </Link>
           {' · '}
-          <Link to="/" className="font-semibold text-slate-700 hover:underline">
+          <Link to="/" className="font-semibold text-slate-700 hover:underline dark:text-slate-300">
             Beranda
           </Link>
         </p>

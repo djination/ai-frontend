@@ -1,4 +1,5 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { useSessionRole } from '../hooks/useSessionRole';
 import { clearAuthSession } from '../services/authSession';
 
@@ -20,6 +21,7 @@ export function AdminPortalLayout() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <ThemeToggle variant="onDark" />
           <Link
             to="/app/learn"
             className="rounded-lg border border-white/20 bg-white/5 px-3 py-2 text-xs font-semibold text-white hover:bg-white/10"

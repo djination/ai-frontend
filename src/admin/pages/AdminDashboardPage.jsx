@@ -34,14 +34,14 @@ export function AdminDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <header className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+      <header className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/90">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 dark:text-brand-400">
           Selamat datang
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900 md:text-3xl">
+        <h1 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100 md:text-3xl">
           Panel kelola konten
         </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600">
+        <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
           Di sini Anda mengatur alur materi: dari pengumpulan teks, penyuntingan, hingga persetujuan
           sebelum tayang. Gunakan menu di kiri untuk berpindah langkah — tidak perlu menggulir satu
           halaman panjang lagi.
@@ -49,7 +49,9 @@ export function AdminDashboardPage() {
       </header>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-slate-800">Ringkasan data saat ini</h2>
+        <h2 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-200">
+          Ringkasan data saat ini
+        </h2>
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <StatCard
             label="Konten mentah"
@@ -70,22 +72,24 @@ export function AdminDashboardPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-slate-800">Alur kerja yang disarankan</h2>
+        <h2 className="mb-3 text-sm font-semibold text-slate-800 dark:text-slate-200">
+          Alur kerja yang disarankan
+        </h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {STEPS.map((step) => (
             <NavLink
               key={step.to}
               to={step.to}
-              className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md"
+              className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md dark:border-slate-700 dark:bg-slate-900/90 dark:hover:border-brand-600"
             >
-              <span className="inline-block rounded-full bg-brand-50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-800">
+              <span className="inline-block rounded-full bg-brand-50 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-800 dark:bg-brand-950/50 dark:text-brand-200">
                 {step.badge}
               </span>
-              <p className="mt-3 text-lg font-semibold text-slate-900 group-hover:text-brand-800">
+              <p className="mt-3 text-lg font-semibold text-slate-900 group-hover:text-brand-800 dark:text-slate-100 dark:group-hover:text-brand-300">
                 {step.title}
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">{step.body}</p>
-              <p className="mt-4 text-xs font-semibold text-brand-700">Buka halaman →</p>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">{step.body}</p>
+              <p className="mt-4 text-xs font-semibold text-brand-700 dark:text-brand-400">Buka halaman →</p>
             </NavLink>
           ))}
         </div>

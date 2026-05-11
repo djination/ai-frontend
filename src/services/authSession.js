@@ -39,6 +39,11 @@ export function clearAuthSession() {
   localStorage.removeItem(STORAGE_KEYS.AUTH_ACCESS_TOKEN);
   localStorage.removeItem(STORAGE_KEYS.AUTH_REFRESH_TOKEN);
   localStorage.removeItem(STORAGE_KEYS.ADMIN_AUTH);
+  try {
+    sessionStorage.removeItem(STORAGE_KEYS.CHAT_SESSION);
+  } catch {
+    /* ignore */
+  }
 }
 
 export function isAccessTokenExpired() {

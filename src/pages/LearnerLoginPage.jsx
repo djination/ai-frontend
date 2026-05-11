@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { ThemeToggle } from '../components/ThemeToggle';
 import { useSessionRole } from '../hooks/useSessionRole';
 import {
   clearAuthSession,
@@ -35,18 +36,23 @@ export function LearnerLoginPage() {
   const [loading, setLoading] = useState(false);
 
   return (
-    <main className="mx-auto flex min-h-screen w-full max-w-lg flex-col justify-center px-4 py-12">
-      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">
+    <main className="relative mx-auto flex min-h-screen w-full max-w-lg flex-col justify-center px-4 py-12">
+      <div className="absolute right-4 top-4 z-10 md:right-8 md:top-8">
+        <ThemeToggle />
+      </div>
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900/90 md:p-8">
+        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700 dark:text-brand-400">
           Peserta
         </p>
-        <h1 className="mt-2 text-2xl font-semibold text-slate-900">Masuk ke akun learner</h1>
-        <p className="mt-2 text-sm leading-relaxed text-slate-600">
+        <h1 className="mt-2 text-2xl font-semibold text-slate-900 dark:text-slate-100">
+          Masuk ke akun learner
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
           Gunakan username dan kata sandi akun Anda. Setelah masuk Anda akan diarahkan ke halaman
           yang dituju (misalnya chat atau materi).
         </p>
         {RECAPTCHA_SITE_KEY ? (
-          <p className="mt-2 text-xs text-slate-500">
+          <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
             Dilindungi oleh reCAPTCHA saat server mengaktifkan verifikasi login.
           </p>
         ) : null}
@@ -74,17 +80,17 @@ export function LearnerLoginPage() {
             }
           }}
         >
-          <label className="block text-sm font-medium text-slate-800">
+          <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">
             Username
             <input
               required
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-brand-500 dark:focus:ring-brand-500"
             />
           </label>
-          <label className="block text-sm font-medium text-slate-800">
+          <label className="block text-sm font-medium text-slate-800 dark:text-slate-200">
             Kata sandi
             <input
               required
@@ -92,10 +98,12 @@ export function LearnerLoginPage() {
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600"
+              className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 focus:border-brand-600 focus:outline-none focus:ring-1 focus:ring-brand-600 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:focus:border-brand-500 dark:focus:ring-brand-500"
             />
           </label>
-          {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+          {error ? (
+            <p className="text-sm text-rose-600 dark:text-rose-400">{error}</p>
+          ) : null}
           <button
             type="submit"
             disabled={loading}
@@ -107,20 +115,20 @@ export function LearnerLoginPage() {
 
         <button
           type="button"
-          className="mt-3 w-full text-center text-xs text-slate-500 underline hover:text-slate-700"
+          className="mt-3 w-full text-center text-xs text-slate-500 underline hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300"
           onClick={() => clearAuthSession()}
         >
           Hapus token tersimpan di perangkat ini
         </button>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm text-slate-600 dark:text-slate-400">
           Belum punya akun?{' '}
-          <Link to="/register" className="font-semibold text-brand-700 hover:underline">
+          <Link to="/register" className="font-semibold text-brand-700 hover:underline dark:text-brand-400">
             Daftar learner
           </Link>
         </p>
-        <p className="mt-3 text-center text-sm text-slate-600">
-          <Link to="/" className="font-semibold text-slate-700 hover:underline">
+        <p className="mt-3 text-center text-sm text-slate-600 dark:text-slate-400">
+          <Link to="/" className="font-semibold text-slate-700 hover:underline dark:text-slate-300">
             Kembali ke beranda
           </Link>
         </p>

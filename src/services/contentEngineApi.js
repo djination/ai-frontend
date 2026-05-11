@@ -78,6 +78,7 @@ export function fetchRawContents(filters = {}) {
   if (filters.learning_path) q.set('learning_path', filters.learning_path);
   if (filters.language_code) q.set('language_code', filters.language_code);
   if (filters.language) q.set('language', filters.language);
+  if (filters.suggested_difficulty) q.set('suggested_difficulty', filters.suggested_difficulty);
   const qs = q.toString();
   return request(`/admin/raw-content/${qs ? `?${qs}` : ''}`);
 }
@@ -127,6 +128,39 @@ export function setModulePublishStatus(moduleId, isPublished, options = {}) {
   });
 }
 
+/** List chat sessions for the current user (newest first). */
+export function fetchChatSessions(options = {}) {
+  const q = new URLSearchParams();
+  if (options.limit != null) q.set('limit', String(options.limit));
+  if (options.status) q.set('status', String(options.status));
+  const qs = q.toString();
+  return request(`/chat/sessions/${qs ? `?${qs}` : ''}`);
+}
+
+/** Rename a chat session (custom title). */
+export function patchChatSession(sessionKey, body) {
+  const sk = encodeURIComponent(String(sessionKey).trim());
+  return request(`/chat/sessions/${sk}/`, {
+    method: 'PATCH',
+    body: JSON.stringify(body),
+  });
+}
+
+/** Soft-delete a chat session. */
+export function deleteChatSession(sessionKey) {
+  const sk = encodeURIComponent(String(sessionKey).trim());
+  return request(`/chat/sessions/${sk}/`, {
+    method: 'DELETE',
+  });
+}
+
+/** Load persisted chat turns for the current JWT user and session (GET). */
+export function fetchChatHistory(sessionKey) {
+  const q = new URLSearchParams();
+  q.set('session_key', String(sessionKey).trim());
+  return request(`/chat/history/?${q.toString()}`);
+}
+
 export function sendChatMessage({ message, sessionKey, mode, level, moduleContext }) {
   return request('/chat/', {
     method: 'POST',
@@ -162,6 +196,21 @@ export function requestBillingPlanUpgrade(planCode) {
   return request('/billing/request-upgrade/', {
     method: 'POST',
     body: JSON.stringify({ plan_code: planCode }),
+  });
+}
+
+/**
+ * intent: cancel | revoke_cancel | downgrade
+ * cancel: default akhir periode; when: 'immediate' menghentikan akses sekarang.
+ */
+export function manageSubscription({ intent, planCode, when } = {}) {
+  return request('/billing/subscription/manage/', {
+    method: 'POST',
+    body: JSON.stringify({
+      intent,
+      ...(planCode ? { plan_code: planCode } : {}),
+      ...(when ? { when } : {}),
+    }),
   });
 }
 

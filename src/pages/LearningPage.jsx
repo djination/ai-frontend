@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { InteractiveQuiz } from '../components/InteractiveQuiz';
 import { LearningSkeleton } from '../components/LearningSkeleton';
 import {
   COURSE_LEVELS,
@@ -248,7 +249,7 @@ export function LearningPage() {
         <button
           type="button"
           onClick={loadInitial}
-          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-brand-300"
+          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-medium text-slate-700 hover:border-brand-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-brand-500"
         >
           Coba Muat Ulang
         </button>
@@ -281,21 +282,21 @@ export function LearningPage() {
 
   return (
     <section className="space-y-4">
-      <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-        <h2 className="text-xl font-semibold text-slate-900">Learning Path</h2>
-        <p className="mt-1 text-sm text-slate-600">
+      <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900/90 md:p-6">
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Learning Path</h2>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
           Pilih level belajar untuk menyesuaikan fokus materi.
         </p>
         {limits?.content ? (
           <p
             className={`mt-2 inline-flex rounded-full border px-2.5 py-1 text-xs font-medium ${
               quotaSeverity(limits.content) === 'critical'
-                ? 'border-rose-300 bg-rose-50 text-rose-800'
+                ? 'border-rose-300 bg-rose-50 text-rose-800 dark:border-rose-800 dark:bg-rose-950/50 dark:text-rose-200'
                 : quotaSeverity(limits.content) === 'warn'
-                  ? 'border-amber-300 bg-amber-50 text-amber-800'
+                  ? 'border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/50 dark:text-amber-200'
                   : quotaSeverity(limits.content) === 'info'
-                    ? 'border-sky-300 bg-sky-50 text-sky-800'
-                    : 'border-slate-200 bg-slate-50 text-slate-700'
+                    ? 'border-sky-300 bg-sky-50 text-sky-800 dark:border-sky-800 dark:bg-sky-950/50 dark:text-sky-200'
+                    : 'border-slate-200 bg-slate-50 text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300'
             }`}
           >
             Sisa konten: {limits.content.remaining}
@@ -303,13 +304,16 @@ export function LearningPage() {
           </p>
         ) : null}
         <div className="mt-4 flex flex-wrap items-end gap-3">
-          <label className="text-xs font-medium text-slate-700" htmlFor="learner-content-lang">
+          <label
+            className="text-xs font-medium text-slate-700 dark:text-slate-300"
+            htmlFor="learner-content-lang"
+          >
             Bahasa materi (filter publish)
             <select
               id="learner-content-lang"
               value={languageSelectValue}
               onChange={handleContentLanguageChange}
-              className="mt-1 block min-w-[11rem] rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800"
+              className="mt-1 block min-w-44 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-800 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
             >
               <option value="default">
                 Default
@@ -319,7 +323,7 @@ export function LearningPage() {
               <option value="id">Indonesia (id)</option>
             </select>
           </label>
-          <p className="max-w-md text-xs text-slate-500">
+          <p className="max-w-md text-xs text-slate-500 dark:text-slate-500">
             Mengatur query <code className="text-[11px]">?language=</code> ke API modul. Default memakai preference
             browser jika ada, lalu variabel{' '}
             <code className="text-[11px]">VITE_LEARNER_LANGUAGE</code> saat build.
@@ -334,32 +338,32 @@ export function LearningPage() {
                 className={`rounded-full border px-4 py-1.5 text-sm font-medium transition ${
                   activeLevel === level.key
                     ? 'border-brand-700 bg-brand-700 text-white'
-                    : 'border-slate-300 bg-white text-slate-700 hover:border-brand-300'
+                    : 'border-slate-300 bg-white text-slate-700 hover:border-brand-300 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-brand-500'
                 }`}
               >
                 {level.label}
               </button>
               <Link
                 to={`/app/learn/${level.key}`}
-                className="text-xs font-medium text-brand-700 hover:underline"
+                className="text-xs font-medium text-brand-700 hover:underline dark:text-brand-400"
               >
                 Detail
               </Link>
             </div>
           ))}
         </div>
-        <div className="mt-4 rounded-xl bg-brand-50 p-4">
-          <p className="text-sm font-semibold text-brand-800">
+        <div className="mt-4 rounded-xl bg-brand-50 p-4 dark:bg-brand-950/35">
+          <p className="text-sm font-semibold text-brand-800 dark:text-brand-200">
             Fokus {selectedLevel.label}
           </p>
-          <p className="mt-1 text-xs text-brand-700">
+          <p className="mt-1 text-xs text-brand-700 dark:text-brand-300">
             CEFR: {selectedLevel.cefr} • Estimasi: {selectedLevel.estimatedHours} jam
           </p>
-          <p className="mt-1 text-xs text-brand-700">
+          <p className="mt-1 text-xs text-brand-700 dark:text-brand-300">
             Bahasa tersedia saat ini: {selectedLevel.supportedLanguages.join(', ')}
           </p>
-          <p className="mt-1 text-sm text-brand-700">{selectedLevel.focus}</p>
-          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-brand-700">
+          <p className="mt-1 text-sm text-brand-700 dark:text-brand-300">{selectedLevel.focus}</p>
+          <ul className="mt-2 list-disc space-y-1 pl-5 text-xs text-brand-700 dark:text-brand-300">
             {selectedLevel.outcomes.map((outcome) => (
               <li key={outcome}>{outcome}</li>
             ))}
@@ -371,12 +375,12 @@ export function LearningPage() {
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold ${
                 completedForActiveLevel
                   ? 'bg-emerald-600 text-white'
-                  : 'bg-white text-brand-700'
+                  : 'bg-white text-brand-700 dark:bg-slate-800 dark:text-brand-300'
               }`}
             >
               {completedForActiveLevel ? 'Sudah Selesai' : 'Tandai Selesai'}
             </button>
-            <p className="text-xs text-brand-800">
+            <p className="text-xs text-brand-800 dark:text-brand-200">
               Progress: {completedCount}/{COURSE_LEVELS.length} level ({completionPercentage}
               %)
             </p>
@@ -385,12 +389,12 @@ export function LearningPage() {
       </article>
 
       <article
-        className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6 ${
+        className={`rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900/90 md:p-6 ${
           moduleLoading ? 'opacity-70' : ''
         }`}
       >
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <h2 className="text-xl font-semibold text-slate-900">{module?.title}</h2>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{module?.title}</h2>
           <button
             type="button"
             disabled={moduleLoading}
@@ -399,30 +403,32 @@ export function LearningPage() {
                 state: { chatLearningContext: buildChatLearningPayload(module, activeLevel) },
               })
             }
-            className="shrink-0 rounded-lg border border-brand-600 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-800 hover:bg-brand-100 disabled:cursor-not-allowed disabled:opacity-50"
+            className="shrink-0 rounded-lg border border-brand-600 bg-brand-50 px-4 py-2 text-sm font-semibold text-brand-800 hover:bg-brand-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-brand-500 dark:bg-brand-950/40 dark:text-brand-200 dark:hover:bg-brand-900/50"
           >
             Chat with tutor (this lesson)
           </button>
         </div>
-        <p className="mt-3 whitespace-pre-wrap leading-relaxed text-slate-700">
+        <p className="mt-3 whitespace-pre-wrap leading-relaxed text-slate-700 dark:text-slate-300">
           {module?.lessonContent}
         </p>
-        <div className="mt-4 rounded-xl bg-slate-50 p-4">
-          <p className="text-sm font-semibold text-slate-800">
+        <div className="mt-4 rounded-xl bg-slate-50 p-4 dark:bg-slate-800/60">
+          <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
             Modul untuk level ini: {modulesForActiveLevel.length}
-            <span className="font-normal text-slate-600">
+            <span className="font-normal text-slate-600 dark:text-slate-400">
               {' '}
               · Total publish: {publishedModules.length}
             </span>
-            {moduleLoading ? <span className="ml-2 font-normal text-slate-500">Memuat…</span> : null}
+            {moduleLoading ? (
+              <span className="ml-2 font-normal text-slate-500 dark:text-slate-500">Memuat…</span>
+            ) : null}
           </p>
           {publishedModules.length === 0 ? (
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
               Belum ada modul publish lain yang tersedia. Minta admin publish modul
               tambahan dari halaman admin.
             </p>
           ) : modulesForActiveLevel.length === 0 ? (
-            <p className="mt-1 text-sm text-slate-600">
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
               Belum ada modul dengan tingkat <span className="font-semibold">{selectedLevel.label}</span>{' '}
               (difficulty). Pilih level lain atau minta admin menambah konten untuk level ini.
             </p>
@@ -435,8 +441,8 @@ export function LearningPage() {
                     onClick={() => selectPublishedModule(item.id)}
                     className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition ${
                       selectedModuleId === item.id
-                        ? 'border-brand-600 bg-brand-50 font-semibold text-brand-900'
-                        : 'border-slate-200 bg-white text-slate-800 hover:border-brand-300'
+                        ? 'border-brand-600 bg-brand-50 font-semibold text-brand-900 dark:border-brand-500 dark:bg-brand-950/40 dark:text-brand-100'
+                        : 'border-slate-200 bg-white text-slate-800 hover:border-brand-300 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-brand-500'
                     }`}
                   >
                     {item.title}
@@ -448,34 +454,12 @@ export function LearningPage() {
         </div>
       </article>
 
-      <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-        <h3 className="text-lg font-semibold text-slate-900">Quick Quiz</h3>
-        {(module?.quiz ?? []).length === 0 ? (
-          <p className="mt-2 text-sm text-slate-600">Belum ada quiz untuk modul ini.</p>
-        ) : (
-          <div className="mt-4 space-y-4">
-            {module.quiz.map((item, index) => (
-              <div key={`${item.question}-${index}`} className="rounded-xl bg-slate-50 p-4">
-                <p className="font-medium text-slate-900">{item.question}</p>
-                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-slate-700">
-                  {item.options.map((option, optionIndex) => (
-                    <li
-                      key={`${option}-${optionIndex}`}
-                      className={
-                        optionIndex === item.correctOptionIndex
-                          ? 'font-semibold text-emerald-700'
-                          : ''
-                      }
-                    >
-                      {option}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2 text-xs text-slate-500">{item.explanation}</p>
-              </div>
-            ))}
-          </div>
-        )}
+      <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900/90 md:p-6">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Quick Quiz</h3>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          Pilih jawaban untuk melihat apakah sudah benar dan membaca penjelasan singkat.
+        </p>
+        <InteractiveQuiz key={module?.id ?? 'no-module'} quiz={module?.quiz ?? []} />
       </article>
     </section>
   );

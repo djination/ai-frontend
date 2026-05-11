@@ -3,6 +3,12 @@ import { useAdminData } from '../AdminDataContext';
 import { AdminFiltersBar } from '../components/AdminFiltersBar';
 import { InputField } from '../components/adminUi';
 
+function suggestedDifficultyLabel(code) {
+  const m = { beginner: 'Pemula', intermediate: 'Menengah', advanced: 'Lanjutan' };
+  const k = String(code || '').toLowerCase();
+  return m[k] || (k ? k : '');
+}
+
 export function AdminRawFeedPage() {
   const {
     loading,
@@ -23,8 +29,8 @@ export function AdminRawFeedPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold text-slate-900">Konten mentah</h1>
-        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600">
+        <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Konten mentah</h1>
+        <p className="mt-2 max-w-2xl text-sm leading-relaxed text-slate-600 dark:text-slate-400">
           Ini adalah bahan bacaan yang sudah diimpor tetapi belum menjadi modul pelajaran. Sunting
           bila perlu, lalu buat <span className="font-medium">modul draf</span> untuk melanjutkan ke
           antrian tayang.
@@ -33,10 +39,10 @@ export function AdminRawFeedPage() {
 
       <AdminFiltersBar />
 
-      <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-900/90">
         <div className="space-y-3">
           {rawContents.length === 0 ? (
-            <p className="text-sm text-slate-600">
+            <p className="text-sm text-slate-600 dark:text-slate-400">
               Belum ada konten mentah untuk filter ini. Coba longgarkan filter atau impor dari halaman
               Cari &amp; impor.
             </p>
@@ -44,20 +50,27 @@ export function AdminRawFeedPage() {
             rawContents.map((item) => {
               const hasModule = (item.processed_module_count ?? 0) > 0;
               const isEditing = editingRawId === item.id;
-              const promoteDiff = promoteDifficultyByRaw[item.id] ?? 'beginner';
+              const promoteDiff =
+                promoteDifficultyByRaw[item.id] ?? item.suggested_difficulty ?? 'beginner';
+              const levelLabel = suggestedDifficultyLabel(item.suggested_difficulty);
               return (
                 <div
                   key={item.id}
-                  className="rounded-xl border border-slate-200 p-4 text-sm transition hover:border-slate-300"
+                  className="rounded-xl border border-slate-200 p-4 text-sm transition hover:border-slate-300 dark:border-slate-600 dark:hover:border-slate-500"
                 >
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-slate-900">{item.title}</p>
-                      <p className="mt-1 text-slate-600">
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">{item.title}</p>
+                      <p className="mt-1 text-slate-600 dark:text-slate-400">
                         Jalur: {getLearningPathLabel(item.category)}
+                        {levelLabel ? (
+                          <span className="ml-2">
+                            · Level: <span className="font-medium">{levelLabel}</span>
+                          </span>
+                        ) : null}
                       </p>
                       {(item.language_code || item.locale) && (
-                        <p className="mt-1 text-xs text-slate-600">
+                        <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
                           {item.language_code ? (
                             <span className="mr-2">
                               Bahasa: <span className="font-medium">{item.language_code}</span>
@@ -70,7 +83,7 @@ export function AdminRawFeedPage() {
                           ) : null}
                         </p>
                       )}
-                      <p className="mt-1 text-xs text-slate-500">
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-500">
                         Jumlah modul dari konten ini: {item.processed_module_count ?? 0}
                         {hasModule
                           ? ' — satu modul per konten; hubungi tim IT jika perlu membuat ulang.'
@@ -80,7 +93,7 @@ export function AdminRawFeedPage() {
                         href={item.source_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="mt-2 inline-block break-all text-sm font-medium text-brand-700 hover:underline"
+                        className="mt-2 inline-block break-all text-sm font-medium text-brand-700 hover:underline dark:text-brand-400"
                       >
                         {item.source_url}
                       </a>
@@ -90,7 +103,7 @@ export function AdminRawFeedPage() {
                         type="button"
                         disabled={loading}
                         onClick={() => openEditRaw(item)}
-                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-brand-400 disabled:opacity-50"
+                        className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-800 hover:border-brand-400 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-brand-500"
                       >
                         Sunting
                       </button>
@@ -104,7 +117,7 @@ export function AdminRawFeedPage() {
                             [item.id]: ev.target.value,
                           }))
                         }
-                        className="rounded-lg border border-slate-300 bg-white px-2 py-2 text-xs text-slate-900 disabled:opacity-50"
+                        className="rounded-lg border border-slate-300 bg-white px-2 py-2 text-xs text-slate-900 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                       >
                         {DIFFICULTY_OPTIONS.map((opt) => (
                           <option key={opt.value} value={opt.value}>
@@ -124,7 +137,7 @@ export function AdminRawFeedPage() {
                   </div>
 
                   {isEditing ? (
-                    <div className="mt-4 space-y-3 border-t border-slate-100 pt-4">
+                    <div className="mt-4 space-y-3 border-t border-slate-100 pt-4 dark:border-slate-700">
                       <InputField
                         label="Judul"
                         name="edit-title"
@@ -142,10 +155,10 @@ export function AdminRawFeedPage() {
                           setEditRawForm((p) => ({ ...p, source_url: ev.target.value }))
                         }
                       />
-                      <label className="text-sm font-medium text-slate-700">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Jalur belajar
                         <select
-                          className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900"
+                          className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                           value={editRawForm.category}
                           onChange={(ev) =>
                             setEditRawForm((p) => ({ ...p, category: ev.target.value }))
@@ -158,10 +171,10 @@ export function AdminRawFeedPage() {
                           ))}
                         </select>
                       </label>
-                      <label className="text-sm font-medium text-slate-700">
+                      <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                         Isi teks
                         <textarea
-                          className="mt-1 min-h-40 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-900"
+                          className="mt-1 min-h-40 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
                           value={editRawForm.raw_text}
                           onChange={(ev) =>
                             setEditRawForm((p) => ({ ...p, raw_text: ev.target.value }))
@@ -181,7 +194,7 @@ export function AdminRawFeedPage() {
                           type="button"
                           disabled={loading}
                           onClick={cancelEditRaw}
-                          className="rounded-lg border border-slate-300 px-4 py-2 text-xs font-semibold text-slate-700"
+                          className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-xs font-semibold text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200"
                         >
                           Batal
                         </button>

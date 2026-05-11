@@ -114,7 +114,7 @@ function App() {
 function AppRoot() {
   useSessionTimeout();
   return (
-    <main className="mx-auto px-4 py-6 md:px-6">
+    <main className="mx-auto px-4 py-6 text-slate-800 dark:text-slate-200 md:px-6">
       <Outlet />
     </main>
   );
